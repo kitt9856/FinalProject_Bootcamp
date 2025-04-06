@@ -1,0 +1,32 @@
+server:
+   port: 8100
+
+api:
+  jph:
+    domain: "query1.finance.yahoo.com"
+    quote:
+     # endpoint: "/quote"
+      type: "/finance"
+      version: "/v7"
+      endpoint: "/quote"
+
+database:
+  postgres: "tryAPI"
+
+spring.datasource:
+  # driverClassName: "org.hibernate.dialect.PostgreSQLDialect"
+  driverClassName: "org.postgresql.Driver"
+  url: "jdbc:postgresql://localhost:5432/${database.postgres}"
+  username: "postgres"
+  password: "admin1234"
+  
+spring.jpa:
+  show-sql: true
+  hibernate.ddl-auto: update #none  #update
+
+spring.data.redis:
+  host: localhost
+  port: 6379
+  database: 0
+  timeout: 60000
+  password:

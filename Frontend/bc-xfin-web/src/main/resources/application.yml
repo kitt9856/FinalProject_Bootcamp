@@ -1,0 +1,8 @@
+server:
+  port: 8200
+
+api:
+  yahooFc:
+    host: "localhost:8100"
+    endpoints:
+      markets: "/api/no2/getMarketData"
