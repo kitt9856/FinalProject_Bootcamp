@@ -4,7 +4,7 @@ import com.crumbcookie.crumbcookieresponse.dto.YahooStockDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class YahooStockmapper {
-   private static final ObjectMapper objectMapper = new ObjectMapper();
+   /* private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static YahooStockDTO mapJsonToYahooStockDTO(String json) {
         try {
@@ -22,5 +22,5 @@ public class YahooStockmapper {
             e.printStackTrace();
             return null;
         }
-    }
+    } */
 }

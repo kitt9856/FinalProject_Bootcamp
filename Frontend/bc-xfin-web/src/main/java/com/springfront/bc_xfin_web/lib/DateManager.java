@@ -3,9 +3,9 @@ package com.springfront.bc_xfin_web.lib;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import org.springframework.stereotype.Component;
 
 
 public class DateManager {
@@ -36,11 +36,21 @@ public class DateManager {
     return zonedDateTime.toLocalDate();
   }
 
+  public static LocalTime longToLocalTime(Long marketTime) {
+    Instant instant = Instant.ofEpochMilli(marketTime * 1000);
+    ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("Asia/Hong_Kong"));
+    return zonedDateTime.toLocalTime();
+  }
+
   public static LocalDateTime longToLocalDateTime(Long marketTime) {
     Instant instant = Instant.ofEpochMilli(marketTime * 1000);
     ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("Asia/Hong_Kong"));
     return zonedDateTime.toLocalDateTime();
   }
+
+  public long convertToMilli(LocalDateTime dateTime) {
+    return dateTime.atZone(this.zoneId).toInstant().toEpochMilli(); // 毫秒精度
+}
 
 
 

@@ -1,17 +1,16 @@
 package com.crumbcookie.crumbcookieresponse.Entity;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-//import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -20,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 @Entity
 @Table(name = "PriceList")
@@ -55,8 +55,9 @@ public class StockPriceEntity {
   }
 
 
-  @OneToOne
-  @JoinColumn(name = "symbol")
+  //@OneToOne
+  @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+  @JoinColumn(name = "stocksEntity_id")
   @Setter
   private StocksEntity stocksEntity;
 

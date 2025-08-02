@@ -6,3 +6,8 @@ api:
     host: "localhost:8100"
     endpoints:
       markets: "/api/no2/getMarketData"
+      ohmarkets: "/api/no2/getMarketOHData"
+      search: "/api/no2/search"
+      checkAllSybmol: "/api/no2/checkAllSybmol"
+      checkAllSybmolName: "/api/no2/checkAllSybmolName"
+      

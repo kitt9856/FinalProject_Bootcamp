@@ -1,7 +1,6 @@
 package com.springfront.bc_xfin_web.dto;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +9,7 @@ import lombok.Getter;
 @Builder
 public class MarketQuickStoreDTO {
     private String symbol;
+    private String symbolFullName;
     private LocalDateTime regularMarketTime;
     private Double regularMarketPrice;
     private Double regularMarketChangePercent;

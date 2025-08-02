@@ -1,17 +1,23 @@
 package com.crumbcookie.crumbcookieresponse.dto;
 
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class YahooStockDTO {
   @JsonProperty("quoteResponse")
   private QuoteBody body;
+  
 
   @Getter
   @Builder

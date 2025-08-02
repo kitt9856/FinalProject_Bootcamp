@@ -8,9 +8,8 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -53,6 +52,12 @@ public class MarketTimeManager {
     Instant instant = Instant.ofEpochMilli(marketTime * 1000); // conv to sec
     ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("Asia/Hong_Kong"));
     DayOfWeek dayOfWeek = zonedDateTime.getDayOfWeek();
+    String formattedDayOfWeek = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+    return formattedDayOfWeek;
+  }
+
+  public static String datetimeTOWeek(LocalDateTime marketTime) {
+    DayOfWeek dayOfWeek = marketTime.getDayOfWeek();
     String formattedDayOfWeek = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
     return formattedDayOfWeek;
   }

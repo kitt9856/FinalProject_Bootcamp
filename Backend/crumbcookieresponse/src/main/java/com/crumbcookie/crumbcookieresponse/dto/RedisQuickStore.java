@@ -1,7 +1,7 @@
 package com.crumbcookie.crumbcookieresponse.dto;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,6 +9,7 @@ import lombok.Getter;
 @Builder
 public class RedisQuickStore {
     private String symbol;
+    private String symbolFullName;
     private LocalDateTime regularMarketTime;
     private Double regularMarketPrice;
     private Double regularMarketOpen;

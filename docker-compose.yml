@@ -1,0 +1,72 @@
+services:
+  Backend:
+    image: crumbcookieresponse:0.0.1
+    container_name: crumbcookieresponse-container
+    build:
+      context: ./Backend/crumbcookieresponse
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "8185:8100"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+  
+  Frontend:
+    image: bc-xfin-web:0.0.1
+    container_name: bc-xfin-web-container
+    build:
+      context: ./Frontend/bc-xfin-web
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+    ports:
+      - "8285:8200"
+  
+  
+  postgres:
+    image: postgres:13
+    container_name: postgres-container
+    environment:
+      POSTGRES_DB: tryAPI
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin1234
+    ports:
+      - "5432:5432"
+    restart: always
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+  
+  #pgadmin:
+  #  image: dpage/pgadmin4
+  #  container_name: pgadmin
+  #  #environment:
+  #  #  PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #  #  PGADMIN_DEFAULT_PASSWORD: admin
+  #  ports:
+  #    - "8080:80"
+  #  depends_on:
+  #    - postgres  # Ensures pgAdmin starts after PostgreSQL
+  #  networks:
+  #    - app-network
+    
+  
+  redis:
+    image: redis:latest
+    #container_name: redis-container
+    ports:
+      - "6479:6379"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,6 +1,7 @@
 package com.springfront.bc_xfin_web.model;
 
 import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +19,7 @@ public class LinePoint {
   }
 
   public enum TYPE {
-    FIVE_MIN;
+    FIVE_MIN,;
 
     public static LinePoint.TYPE of(String type) {
       return switch (type) {

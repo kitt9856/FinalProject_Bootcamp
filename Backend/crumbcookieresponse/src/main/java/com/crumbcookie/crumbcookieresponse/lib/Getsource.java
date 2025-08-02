@@ -13,8 +13,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import com.crumbcookie.crumbcookieresponse.dto.YahooStockDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 
 public interface Getsource {

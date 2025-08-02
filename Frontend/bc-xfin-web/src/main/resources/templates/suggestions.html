@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div id="suggestions" th:if="${not #lists.isEmpty(suggestions)}">
+    <div th:each="dto : ${suggestions}" 
+         class="suggestion-item"
+         th:data-symbol="${dto.symbol}"
+         th:text="${dto.symbol}"></div>
+  </div>
+</body>
+</html>
