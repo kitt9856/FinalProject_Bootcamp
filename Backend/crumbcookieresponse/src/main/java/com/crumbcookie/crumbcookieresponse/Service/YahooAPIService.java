@@ -167,8 +167,13 @@ public class YahooAPIService {
         System.out.println("cannot connect getData4");
       } */
 
-      String api = UriComponentsBuilder.newInstance().scheme("http")
+     /*  String api = UriComponentsBuilder.newInstance().scheme("http")
         .host("localhost").port(8100).path("/api/no2/getData5")//.path("").path("")
+        .queryParams(DIYhttpParams)
+        .toUriString();
+      System.out.println(api); */
+       String api = UriComponentsBuilder.newInstance().scheme("http")
+        .host("pkproject.onrender.com").path("/api/no2/getData5")//.path("").path("")
         .queryParams(DIYhttpParams)
         .toUriString();
       System.out.println(api);

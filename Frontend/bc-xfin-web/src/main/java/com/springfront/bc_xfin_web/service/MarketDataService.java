@@ -58,7 +58,7 @@ public class MarketDataService {
 
   public List<MarketQuickStoreDTO> getmarketquickDTO(){
     String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(endpointMarkets)
       .build()
@@ -79,7 +79,7 @@ public class MarketDataService {
 
   public List<MarketQuickStoreDTO> getOHmarketquickDTO(){
     String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(endpointOHMarkets)
       .build()
@@ -100,7 +100,7 @@ public class MarketDataService {
 
   public List<CandleStickDTO> getCandleData() {
     /* String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(endpointMarkets)
       .build()
@@ -129,7 +129,7 @@ public class MarketDataService {
 
   public List<CandleStickDTO> getOHCandleData() {
     String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(endpointOHMarkets)
       .build()
@@ -152,7 +152,7 @@ public class MarketDataService {
   public List<LinePointDTO> getLineData()  {
    
       /* String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(endpointMarkets)
       .build()
@@ -201,7 +201,7 @@ public class MarketDataService {
   public List<LinePointDTO> getOHLineData()  {
    
       String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(endpointOHMarkets)
       .build()
@@ -223,7 +223,7 @@ public class MarketDataService {
 
   public List<String> getAllSymbols(){
     String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(AllSybmol)
       .build()
@@ -237,7 +237,7 @@ public class MarketDataService {
 
   public Map<String,String> getAllSymbolsName(){
     String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(AllSybmolName)
       .build()
@@ -266,7 +266,7 @@ public class MarketDataService {
 
   public List<MarketQuickStoreDTO> getByKeyword(String keyword){
     String url = UriComponentsBuilder.newInstance()
-      .scheme("http")
+      .scheme("https")
       .host(host)
       .path(search)
       .queryParam("keyword", keyword)
