@@ -12,6 +12,7 @@ import com.crumbcookie.crumbcookieresponse.Repository.StockPriceRepository;
 import com.crumbcookie.crumbcookieresponse.Repository.StocksRepository;
 import com.crumbcookie.crumbcookieresponse.Service.StockListService;
 import com.crumbcookie.crumbcookieresponse.Service.YahooAPIService;
+import com.crumbcookie.crumbcookieresponse.Service.YahooExAPIService;
 import com.crumbcookie.crumbcookieresponse.Service.YahooOHAPIService;
 import com.crumbcookie.crumbcookieresponse.lib.CrumbManager;
 import com.crumbcookie.crumbcookieresponse.lib.RedisManager;
@@ -48,6 +49,9 @@ public class StartupManager implements CommandLineRunner {
   @Autowired
   private StockStore stockStore;
 
+  @Autowired
+  private YahooExAPIService yahooExAPIService;
+
   @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() throws Exception {
         yahooAPIService.getStockUpdateDTO(this.stockStore.getTargetSybmols()); 
@@ -60,6 +64,7 @@ public class StartupManager implements CommandLineRunner {
     this.stockPriceOHRepository.deleteAll();
     this.stockPriceRepository.deleteAll();
     this.stocksRepository.deleteAll();
+    this.yahooExAPIService.getExMarket();
     this.stockListService.getMarket();
     this.yahooOHAPIService.getOHMarket();
     this.yahooAPIService.getOHData();

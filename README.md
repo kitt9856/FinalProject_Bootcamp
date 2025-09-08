@@ -3,6 +3,36 @@
 ## Project Structure
 
 ```
+## Backend Verison Update
+
+In 0.0.1-SNAPSHOT ver., "Open Price" per minute was fixed it leads to  Candlestick Chart display the open price at a static point and it appears illogical
+
+In 0.0.2-SNAPSHOT ver., Add a extra api data source try to sovle the issue of 0.0.1-SNAPSHOT ver.
+
+# Features
+
+## Backend
+* Real-time stock data soucre fetching from Yahoo Finance API
+ * Market price updates per minute, reflecting price changes in real time
+* Historical stock data (From today up to the past 3 month)
+* RESTful API endpoints for frontend (Mainly GET requests)
+ * Includes stock name search functionality
+* Using Redis to efficiently handle data interactions
+* Native SQL logic to optimize search functionality with Frontend
+
+## Frontend
+* Focused on data visualization
+* Real-time trading representation using both line charts and candlestick charts
+* Responsive Design
+
+
+## Tech Stack
+Backend: Java (Spring Boot)
+Frontend: Java (thymeleaf), HTML, CSS, JavaScript
+Database: PostgreSQL
+Cache Management: Redis
+Containerization: Docker (Deployment)
+
 FinalProject_Bootcamp-main/
 ├── Backend/
 │   └── crumbcookieresponse/

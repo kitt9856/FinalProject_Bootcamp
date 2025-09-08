@@ -7,9 +7,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.crumbcookie.crumbcookieresponse.Controller.DataAPIController;
+import com.crumbcookie.crumbcookieresponse.Controller.MarketAPI;
 import com.crumbcookie.crumbcookieresponse.Repository.StockPriceRepository;
 import com.crumbcookie.crumbcookieresponse.Service.StockListService;
 import com.crumbcookie.crumbcookieresponse.Service.YahooAPIService;
+import com.crumbcookie.crumbcookieresponse.Service.YahooExAPIService;
 import com.crumbcookie.crumbcookieresponse.Service.YahooOHAPIService;
 import com.crumbcookie.crumbcookieresponse.lib.RedisManager;
 import com.crumbcookie.crumbcookieresponse.model.StockStore;
@@ -38,7 +40,13 @@ public class ScheduleTaskManager {
   private DataAPIController dataAPIController;
 
   @Autowired
+  private MarketAPI marketAPI;
+
+  @Autowired
   private StockStore stockStore;
+
+  @Autowired
+  private YahooExAPIService yahooExAPIService;
 
 
   //weekday 9:35 to 15:55, every 5 min getdata
@@ -46,6 +54,7 @@ public class ScheduleTaskManager {
   @Scheduled(cron = "*/30 * * * * MON-SAT",  zone = "Asia/Hong_Kong")
   public void updateMarket() throws Exception {
    // this.yahooAPIService.getSymbols();
+    this.yahooExAPIService.getExMarket();
     this.stockListService.getMarket();
     //this.dataAPIController.getQuote(stockStore.getTargetSybmols());
     /* try {
@@ -71,6 +80,11 @@ public class ScheduleTaskManager {
   public void prevMarket() throws Exception {
     this.stockPriceRepository.deleteAll();
    // this.redisManager.deleteAll();
+  }
+
+  @Scheduled(fixedRate = 14 * 60 * 1000)
+  public void ping() throws Exception{
+    this.marketAPI.ping();
   }
   
   

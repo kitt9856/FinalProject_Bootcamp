@@ -167,13 +167,8 @@ public class YahooAPIService {
         System.out.println("cannot connect getData4");
       } */
 
-     /*  String api = UriComponentsBuilder.newInstance().scheme("http")
+      String api = UriComponentsBuilder.newInstance().scheme("http")
         .host("localhost").port(8100).path("/api/no2/getData5")//.path("").path("")
-        .queryParams(DIYhttpParams)
-        .toUriString();
-      System.out.println(api); */
-       String api = UriComponentsBuilder.newInstance().scheme("http")
-        .host("pkproject.onrender.com").path("/api/no2/getData5")//.path("").path("")
         .queryParams(DIYhttpParams)
         .toUriString();
       System.out.println(api);
@@ -211,21 +206,7 @@ public class YahooAPIService {
       DIYhttpParams.put("symbols", List.of(symbolParam) );
     
       
-      //if (dataAPIController.getQuote(symbols).getStatusCode().is2xxSuccessful()) {
-      /* System.out.println("getQuote 4XX is" + dataAPIController.getQuote(symbols).getStatusCode().is4xxClientError());
-      String api = UriComponentsBuilder.newInstance().scheme("http")
-        .host("localhost").port(8100).path("/api/no1/getData4")//.path("").path("")
-        .queryParams(DIYhttpParams)
-        .toUriString();
-
-      YahooStockDTO DIYresponse = restTemplate.getForObject(api, YahooStockDTO.class);
-
-      System.out.println(api); */
-     // dtolist.add(dataAPIController.getQuote(symbols).getBody());
-
-    //  return  dtolist; //DIYresponse; 
       
-   // }
 
     crumbManager.getKey();
     String crumb = crumbManager.getStrFromgGetCrum();
@@ -301,29 +282,6 @@ public class YahooAPIService {
       if (resultOpt.isPresent()) {
         return result;
       }
-      
-      //move to Scheduled task
-      /*
-      LocalTime prevMarketTime = LocalTime.of(8, 30);
-      LocalTime openMarketTime = LocalTime.of(9, 30); */
-      /* if (checkTimer.isAfter(prevMarketTime) && checkTimer.isBefore(openMarketTime) 
-          && (checktradeDay) ) {
-        this.stockPriceRepository.deleteAll();
-        this.redisManager.deleteAll();
-        //return empty list of redis
-        return result;
-      } else { */
-
-
-        /* if ( (!checkBreakTime && checktradeDay) || !checktradeDay) {
-          //redis not null return reid first
-         return result;
-        } else  */
-        //  if (!checkBreakTime && checktradeDay) {
-         //   return Collections.emptyList();
-         //}
-         //if ( dbStores.isEmpty()) {
-           //otherwise use DB data
         
         for (StockPriceEntity entity : this.stockPriceRepository.findAll()) {
           RedisQuickStore dStore = RedisQuickStore.builder().symbol(entity.getStocksEntity().getSymbol())

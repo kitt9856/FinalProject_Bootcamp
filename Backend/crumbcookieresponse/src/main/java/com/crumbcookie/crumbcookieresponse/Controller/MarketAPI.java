@@ -77,6 +77,12 @@ public class MarketAPI {
     return this.yahooAPIService.getSymbolsName();
   }
 
+  @GetMapping("/welcome")
+    public String ping() {
+      System.out.println("Backend keepalive");
+        return "Welcome";
+    }
+
 
 
 

@@ -17,8 +17,10 @@ import com.crumbcookie.crumbcookieresponse.Entity.StocksEntity;
 import com.crumbcookie.crumbcookieresponse.Entity.mapper.EntityMapper;
 import com.crumbcookie.crumbcookieresponse.Repository.StockPriceRepository;
 import com.crumbcookie.crumbcookieresponse.Repository.StocksRepository;
+import com.crumbcookie.crumbcookieresponse.dto.ExQuickStore;
 import com.crumbcookie.crumbcookieresponse.dto.RedisQuickStore;
 import com.crumbcookie.crumbcookieresponse.dto.YahooStockDTO;
+import com.crumbcookie.crumbcookieresponse.dto.YahooStockOpenDTO;
 import com.crumbcookie.crumbcookieresponse.lib.MarketTimeManager;
 import com.crumbcookie.crumbcookieresponse.lib.RedisManager;
 import com.crumbcookie.crumbcookieresponse.model.StockStore;
@@ -54,6 +56,9 @@ public class StockListService {
   @Autowired
   private MarketTimeManager marketTimeManager;
 
+  @Autowired
+  private YahooExAPIService yahooExAPIService;
+
 
   /* @Autowired
   private StockPriceEntity existStockPriceEntity; */
@@ -62,6 +67,7 @@ public class StockListService {
     List<String>  symbols =  stockStore.getTargetSybmols() ;
     System.out.println(symbols);
     String marketTime = "";
+    String findsymbolOpen = "";
 
     List<YahooStockDTO> dto = new ArrayList<>();
     //List<YahooStockDTO> dto = (yahooAPIService.getStockDTO(symbols));
@@ -77,6 +83,15 @@ public class StockListService {
       List<RedisQuickStore> existRedis = this.redisManager.get("DTOResult", new TypeReference<List<RedisQuickStore>>() {});
     Optional<List<RedisQuickStore>> existRedisOptional = Optional.ofNullable(existRedis);
 
+    List<ExQuickStore> exDTO = new ArrayList<>();
+    List<ExQuickStore> exDTORedis = this.redisManager.get("ExDTOResult", new TypeReference<List<ExQuickStore>>() {});
+    Optional<List<ExQuickStore>> exDTORedisOptional = Optional.ofNullable(exDTORedis);
+    if (exDTORedisOptional.isPresent()) {
+      exDTO = exDTORedis;
+    } else {
+      List<YahooStockOpenDTO> exDTOFromMarket = this.yahooExAPIService.getExMarket();
+      exDTO = exDTOFromMarket.stream().map(e -> this.entityMapper.mapExQuickStore(e.getChart().getResult().get(0))).toList();
+    }
 
     /* StocksEntity stocksEntity = new StocksEntity();
     StockPriceEntity stockPriceEntity = new StockPriceEntity();
@@ -92,7 +107,6 @@ public class StockListService {
         new TypeReference<Map<String, Double>>() {}
     );
 } catch (MismatchedInputException e) {
-    // 如果是 List 格式，轉換成 Map 或重新初始化
     //redisManager..delete("stockList");
     redisManager.set("stockList", new HashMap<>());
 } */
@@ -160,114 +174,37 @@ public class StockListService {
             
 
             }
-            StockPriceEntity stockPriceEntity = this.entityMapper.mapStockPrice(ouput); 
+            //int hour = this.entityMapper.longToLocalTime(ouput.getRegularMarketTime()).getHour();
+            //int min = this.entityMapper.longToLocalTime(ouput.getRegularMarketTime()).getHour();
+            //ExQuickStore openPoinStore = exDTO.stream().filter(e -> e.getSymbol().equals(ouput.getSymbol()) && e.getTimestamp().getHour() == hour &&
+            //  e.getTimestamp().getMinute() == min).findFirst().get();
+            StockPriceEntity stockPriceEntity = this.entityMapper.mapStockPrice(ouput, exDTO); 
             stockPriceEntity.setStocksEntity(stocksEntity);
             this.stockPriceRepository.save(stockPriceEntity);
             System.out.println("save update price to DB");
 
 
-
-
-             
-              
-            
-
-          //StocksEntity stocksEntity = this.entityMapper.mapStockName(ouput); 
-          
-          //StockPriceEntity stockPriceEntity = this.entityMapper.mapStockPrice(ouput); 
-          //Long targetID = stocksRepository.findById(stocksEntity.getId());
-          //if (stockPriceRepository.findAll(stocksEntity.getSymbol())) {
-            //stockPriceEntity.setStocksEntity(stocksEntity);
-            //this.stocksRepository.save(stocksEntity);
-           //if (stockPriceEntity.getPriceUpdatetime().equals(this.stockPriceRepository.findById(stocksEntity.getId()).get().getPriceUpdatetime())) 
-           // continue;
-         // }
-
-          /* if (!stocksRepository.findBySymbol(stocksEntity.getSymbol()).isPresent()) {
-              this.stocksRepository.save(stocksEntity);
-          } else {
-            Optional<StockPriceEntity> existing = this.stockPriceRepository.findById(stocksEntity.getId());
-            if (existing.isPresent() && 
-                stockPriceEntity.getPriceUpdatetime().equals(existing.get().getPriceUpdatetime())) {
-                continue;
-            }
-          } */
-          
-
-                    
-          
-          
-          //stockPriceEntityList.add(stockPriceEntity);
-          //stockPriceEntity.setStocksEntity(stocksEntity);
-          //this.stocksRepository.save(stocksEntity);
-
-          //stockPriceEntity.setStocksEntity(stocksEntity);
-          //this.stockPriceRepository.save(stockPriceEntity);
-          //this.stockPriceRepository.saveAll(stockPriceEntityList);
-
-          //System.out.println("save update price to DB");
-
-
       String stockName = ouput.getSymbol();
       Double stockPrice = ouput.getRegularMarketPrice();
+      Double stockOpen = stockPriceEntity.getOpen();
       quickGetPrice.put(stockName, stockPrice);
 
       marketTime = "" + this.entityMapper.longToLocalTime(ouput.getRegularMarketTime()) ;
 
-    RedisQuickStore dtoRedisBuilder  = RedisQuickStore.builder().symbol(stockName)
-      .symbolFullName(ouput.getLongName())
-      .regularMarketTime(MarketTimeManager.longToLocalDateTime(ouput.getRegularMarketTime()))
-      .regularMarketPrice(stockPrice).regularMarketChangePercent(ouput.getRegularMarketChangePercent())
-      .regularMarketOpen(ouput.getRegularMarketOpen())
-      .regularMarketDayHigh(ouput.getRegularMarketDayHigh())
-      .regularMarketDayLow(ouput.getRegularMarketDayLow())
-      .bid(ouput.getBid()).ask(ouput.getAsk()).build();
+    //RedisQuickStore dtoRedisBuilder  = RedisQuickStore.builder().symbol(stockName)
+    //  .symbolFullName(ouput.getLongName())
+    //  .regularMarketTime(MarketTimeManager.longToLocalDateTime(ouput.getRegularMarketTime()))
+    //  .regularMarketPrice(stockPrice).regularMarketChangePercent(ouput.getRegularMarketChangePercent())
+    //  .regularMarketOpen(ouput.getRegularMarketOpen())
+    //  .regularMarketDayHigh(ouput.getRegularMarketDayHigh())
+    //  .regularMarketDayLow(ouput.getRegularMarketDayLow())
+    //  .bid(ouput.getBid()).ask(ouput.getAsk()).build();
+    RedisQuickStore dtoRedisBuilder  = this.entityMapper.mapQuickStore(ouput, stockOpen);
 
       redisDtoResult.add(dtoRedisBuilder);
 
         }
-        //StocksEntity stocksEntity = this.entityMapper.mapStockName(result);
-        //StocksEntity stocksEntity = this.entityMapper.mapStockName(result);
-        //StockPriceEntity stockPriceEntity = this.entityMapper.mapStockPrice(result);
-        //StockPriceEntity stockPriceEntity = this.entityMapper.mapStockPrice(result);
         
-        //stockPriceEntityList.add(stockPriceEntity);
-        
-       /*  if (stocksRepository.findBySymbol(stocksEntity.getSymbol()) != null) {
-          stocksEntity = (stocksRepository.findBySymbol(stocksEntity.getSymbol())).get(); 
-        } */
-         
-      /* Optional<StocksEntity> existingStock = stocksRepository.findBySymbol(stocksEntity.getSymbol());
-    
-      if (existingStock.isPresent()) {
-          stocksEntity = existingStock.get();
-      } else {
-          //stocksRepository.save(stocksEntity);
-        this.stocksRepository.save(stocksEntity);
-      } */
-      //this.stocksRepository.save(stocksEntity);
-
-      //stockPriceEntity.setStocksEntity(stocksEntity);
-      //this.stockPriceRepository.save(stockPriceEntity);
-      //this.stockPriceRepository.saveAll(stockPriceEntityList);
-      /* System.out.println("save update price to DB");
-
-
-      String stockName = result.getSymbol();
-      Double stockPrice = result.getRegularMarketPrice();
-      quickGetPrice.put(stockName, stockPrice);
-
-      marketTime = "" + this.entityMapper.longToLocalTime(result.getRegularMarketTime()) ;
-
-    RedisQuickStore dtoRedisBuilder  = RedisQuickStore.builder().symbol(stockName)
-      .regularMarketTime(MarketTimeManager.longToLocalDateTime(result.getRegularMarketTime()))
-      .regularMarketPrice(stockPrice).regularMarketChangePercent(result.getRegularMarketChangePercent())
-      .regularMarketOpen(result.getRegularMarketOpen())
-      .regularMarketDayHigh(result.getRegularMarketDayHigh())
-      .regularMarketDayLow(result.getRegularMarketDayLow())
-      .bid(result.getBid()).ask(result.getAsk()).build();
-
-      redisDtoResult.add(dtoRedisBuilder); */
     }
 
    /*  for (RedisQuickStore DtoResult : redisDtoResult) {
@@ -294,7 +231,6 @@ public class StockListService {
      this.redisManager.set("stockList",quickGetPrice ,Duration.ofMinutes(6) 
     );
 } catch (MismatchedInputException e) {
-    // 如果是 List 格式，轉換成 Map 或重新初始化
     //redisManager..delete("stockList");
     this.redisManager.set("stockList",quickGetPrice ,Duration.ofMinutes(6)); 
 } */

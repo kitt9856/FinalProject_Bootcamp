@@ -64,8 +64,8 @@ public class CrumbManager {
     HttpEntity<String> entity = new HttpEntity<>(headers);
     ResponseEntity<String> response = restTemplate.exchange(urlStr, HttpMethod.GET, entity, String.class);
     this.strFromgGetCrum = response.getBody().toString();
-    System.out.println("Crumb: " + this.strFromgGetCrum); // 打印 Crumb
-    System.out.println("Cookie: " + getYahooCookie()); // 打印 Cookie
+    System.out.println("getKey Crumb: " + this.strFromgGetCrum); // 打印 Crumb
+    System.out.println("getKey Cookie: " + getYahooCookie()); // 打印 Cookie
   }
 
 
