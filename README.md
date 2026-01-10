@@ -48,7 +48,7 @@ Containerization: Docker (Deployment)
 * ![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/FixRegularOpenPrice.jpg)
 
 * After update New Version(0.0.2-SNAPSHOT ver.)
-* ! [Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/CompareToRealCur.jpg)
+* ![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/CompareToRealCur.jpg)
 
 
 ## Project Structure
