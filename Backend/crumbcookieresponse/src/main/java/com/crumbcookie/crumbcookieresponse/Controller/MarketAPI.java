@@ -43,7 +43,6 @@ public class MarketAPI {
   //for debug checking
   @GetMapping("/getData6")
     public List<YahooStockDTO> getMarketUpdateData(@RequestParam List<String> symbols) throws Exception {
-      //return stockListService.getMarket();
       List<YahooStockDTO> data = yahooAPIService.getStockUpdateDTO(symbols);
       return data;
     }
@@ -51,7 +50,6 @@ public class MarketAPI {
 
   @GetMapping("/getData5")
     public List<YahooStockDTO> getMarketData(@RequestParam List<String> symbols) throws Exception {
-      //return stockListService.getMarket();
       List<YahooStockDTO> data = yahooAPIService.getStockDTO(symbols);
       return data;
     }

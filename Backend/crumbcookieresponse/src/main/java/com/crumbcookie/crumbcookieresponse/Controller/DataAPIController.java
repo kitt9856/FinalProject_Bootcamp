@@ -34,7 +34,8 @@ public class DataAPIController {
   private RestTemplate restTemplate;
 
   
-
+  //從CrumbManager取得Crumb key及Yahoo Cookie(A3)，
+  //砌URL，再 call Yahoo Finance API取得股票資料
   @GetMapping("/getData4")
   public ResponseEntity<YahooStockDTO> getQuote(@RequestParam List<String> symbols)
     throws Exception{
@@ -70,22 +71,13 @@ public class DataAPIController {
         .build();
        
       ResponseEntity<YahooStockDTO> response = restTemplate.exchange(url, HttpMethod.GET, entity, YahooStockDTO.class);
-      //ResponseEntity<String> rawResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-       //String responseBody = rawResponse.getBody();  
-      /* if (responseBody == null || !responseBody.trim().endsWith("}")) {
-          throw new RuntimeException("JSON response is truncated or empty");
-      } */
+      
 
       ObjectMapper mapper = new ObjectMapper();
       try {
         response = restTemplate.exchange(url, HttpMethod.GET, entity, YahooStockDTO.class);
-        Thread.sleep(5000);
-        // YahooStockDTO parsedDTO = mapper.readValue(responseBody, YahooStockDTO.class);
-         /* return ResponseEntity.ok()
-                .headers(rawResponse.getHeaders()) // 保留原始响应头
-                .body(parsedDTO); */
-        //return ResponseEntity.ok(result);
+        Thread.sleep(5000);  //避免too many request
+        
         return response;
       } catch (Exception e) {
         System.out.println(e);

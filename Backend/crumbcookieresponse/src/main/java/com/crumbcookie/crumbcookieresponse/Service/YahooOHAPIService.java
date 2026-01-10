@@ -111,8 +111,7 @@ public class YahooOHAPIService {
 
         do {
             response = restTemplate.exchange(url, HttpMethod.GET, entity, YahooStockOHDTO.class);
-            /* isbadreq = response.getBody().getChart().getError().getCode().equals(errorcode) ? 
-            true : false; */
+            
             if (response.getBody() == null || response.getBody().getChart() == null) {
                 while (isbadreq) { 
                     if (response.getBody().getChart().getResult() != null) {
@@ -139,8 +138,6 @@ public class YahooOHAPIService {
 
 
     public List<YahooStockOHDTO> getOHMarket() throws  Exception{
-        //String url = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-        //YahooStockOHDTO ohDTO = restTemplate.getForObject(url, YahooStockOHDTO.class);
         List<String>  symbols =  stockStore.getTargetSybmols();
         String marketTime = "1d";
         LocalDate today = LocalDate.now(this.dateTimeManager.getZoneId());
@@ -170,7 +167,6 @@ public class YahooOHAPIService {
         
       
 
-        //for (YahooStockOHDTO.Chart.OHResult result : ohDTOList.getChart().getResult()) {
         for (YahooStockOHDTO ohdto : ohDTOList) {
             for(YahooStockOHDTO.Chart.OHResult result : ohdto.getChart().getResult()){
                 stocksEntity = this.entityMapper.mapStockName(result);

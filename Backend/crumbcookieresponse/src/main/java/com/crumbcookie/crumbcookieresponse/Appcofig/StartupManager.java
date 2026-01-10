@@ -15,6 +15,7 @@ import com.crumbcookie.crumbcookieresponse.Service.YahooAPIService;
 import com.crumbcookie.crumbcookieresponse.Service.YahooExAPIService;
 import com.crumbcookie.crumbcookieresponse.Service.YahooOHAPIService;
 import com.crumbcookie.crumbcookieresponse.lib.CrumbManager;
+import com.crumbcookie.crumbcookieresponse.lib.MarketTimeManager;
 import com.crumbcookie.crumbcookieresponse.lib.RedisManager;
 import com.crumbcookie.crumbcookieresponse.model.StockStore;
 
@@ -52,23 +53,32 @@ public class StartupManager implements CommandLineRunner {
   @Autowired
   private YahooExAPIService yahooExAPIService;
 
+  @Autowired
+  private MarketTimeManager marketTimeManager;
+
+  //開機後才執行stockUpdateDTO()，call自已的API，不再call request的json data
   @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() throws Exception {
         yahooAPIService.getStockUpdateDTO(this.stockStore.getTargetSybmols()); 
     }
   
-
+  //開機時：
+  //1.如果是工作天，刪除OHLC及Price DB舊資料
+  //1.1如果是weekend，直接用現有資料(不刪除DB)
+  //2.Crumb key
+  //3.取得ExMarket資料(取延遲的K線資料for 陰燭圖)
+  //4.取得Market資料(取當天即時價格資料 for 即時價格)
+  //5.取得OHMarket資料(取當天即時OHLC資料) 
   @Override
   public void run(String... args) throws Exception {
     System.out.println("Service Start");
-    this.stockPriceOHRepository.deleteAll();
-    this.stockPriceRepository.deleteAll();
-    this.stocksRepository.deleteAll();
+    this.marketTimeManager.workingDayDelOHPriceDB(this.stockPriceOHRepository);
+    this.marketTimeManager.workingDayDelPriceDB(this.stockPriceRepository,this.stocksRepository);
+    this.crumbManager.getKey();
     this.yahooExAPIService.getExMarket();
     this.stockListService.getMarket();
     this.yahooOHAPIService.getOHMarket();
     this.yahooAPIService.getOHData();
-    this.crumbManager.getKey();
     System.out.println("Finish get price");
   }
   

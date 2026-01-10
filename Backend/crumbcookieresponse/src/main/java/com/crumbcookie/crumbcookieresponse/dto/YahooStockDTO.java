@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 //@JsonIgnoreProperties(ignoreUnknown = true)
 public class YahooStockDTO {
+  //實時dataDTO
+
   @JsonProperty("quoteResponse")
   private QuoteBody body;
   

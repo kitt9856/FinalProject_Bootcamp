@@ -13,8 +13,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class   StockStore {
-    private  List<String> targetSybmols = List.of("0388.HK", "2105.HK","BTC-USD","TSLA");
-//private  List<String> targetSybmols = List.of("0388.HK");
+    //人手set 股票list
+    private  List<String> targetSybmols = List.of("0388.HK", "2105.HK","0005.HK","BTC-USD","TSLA");
+
 
     
 

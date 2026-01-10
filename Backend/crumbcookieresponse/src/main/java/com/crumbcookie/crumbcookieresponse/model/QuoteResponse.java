@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class QuoteResponse {
+    //for golbal exception handle, but not use this verison
     private List<YahooStockDTO> result;
     private Object error;
 

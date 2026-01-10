@@ -12,10 +12,15 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
+import com.crumbcookie.crumbcookieresponse.Repository.StockPriceOHRepository;
+import com.crumbcookie.crumbcookieresponse.Repository.StockPriceRepository;
+import com.crumbcookie.crumbcookieresponse.Repository.StocksRepository;
+
 @Component
 public class MarketTimeManager {
 
-  public static boolean validTradeDay(LocalDate date) {
+  //public static boolean validTradeDay(LocalDate date) {
+  public static boolean validNotTradeDay(LocalDate date) {
      // List<DayOfWeek> tradingDates = new ArrayList<>();
       DayOfWeek sourcWeek = date.getDayOfWeek();
       if (! (sourcWeek.equals(DayOfWeek.SATURDAY) || sourcWeek.equals(DayOfWeek.SUNDAY))  ) {
@@ -60,6 +65,24 @@ public class MarketTimeManager {
     DayOfWeek dayOfWeek = marketTime.getDayOfWeek();
     String formattedDayOfWeek = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
     return formattedDayOfWeek;
+  }
+
+  public void workingDayDelPriceDB(StockPriceRepository stockPriceRepository, StocksRepository stocksRepository){
+    LocalDate today = LocalDate.now();
+    if (!validNotTradeDay(today)) {
+      stockPriceRepository.deleteAll();
+      stocksRepository.deleteAll();
+      System.out.println("workingDayDelPriceDB, Today is " + today.getDayOfWeek());
+    }
+  }
+
+  public void workingDayDelOHPriceDB(StockPriceOHRepository stockPriceOHRepository ){
+    LocalDate today = LocalDate.now();
+    if (!validNotTradeDay(today)) {
+      stockPriceOHRepository.deleteAll();
+      
+      System.out.println("workingDayDelOHPriceDB, Today is " + today.getDayOfWeek());
+    }
   }
   
 }

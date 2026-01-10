@@ -35,17 +35,14 @@ public class EntityMapper {
     @Autowired
     private MarketTimeManager marketTimeManager;
 
-    /* @Autowired
-  private StocksEntity stocksEntity; */
+    
     @Autowired
     private StocksRepository stocksRepository;
 
     @Autowired
     private RedisManager redisManager;
 
-    /* @Autowired
-    private YahooExAPIService yahooExAPIService; */
-
+    
     public StocksEntity mapStockName(YahooStockDTO.QuoteBody.QuoteResult dto) {
         return StocksEntity.builder().symbol(dto.getSymbol()).longName(dto.getLongName()).build();
     }
@@ -54,101 +51,100 @@ public class EntityMapper {
         return StocksEntity.builder().symbol(OHdto.getMeta().getSymbol()).longName(OHdto.getMeta().getLongName()).build();
     }
 
-    public ExQuickStore mapExQuickStore(YahooStockOpenDTO.Chart.Result dto) {
-        LinkedList<LocalTime> timestamp = new LinkedList<>();
-        timestamp.addAll(dto.getTimestamp().stream().map(e -> longToLocalTime(e)).toList()); 
-        //timestamp.addAll(dto.getTimestamp().stream().map(e -> longToLocalTime(e)).toList());
-        LinkedList<Double> open =  new LinkedList<>();
-        open.addAll(dto.getIndicators().getQuote().get(0).getOpen());
-        LocalTime lasLocalTime = LocalTime.now();
-        Double notNullDouble = 0.0;
-        for (int i = timestamp.size() -1; i >= 0 ; i--) {
-            if (open.get(i) == null) {
-                continue;
-            } else{
-                notNullDouble = open.get(i);
-                lasLocalTime = timestamp.get(i);
-                break;
-            }
-        }
-        
-        //LocalTime time = LocalTime.now();
-        //Double openPoint = 0.0;
-       /*  if (open.getLast() == null) {
-            
-        } */
-
-        return ExQuickStore.builder().symbol(dto.getMeta().getSymbol())
-                .timestamp(lasLocalTime)
-                .open(notNullDouble).build();
-    }
-
     
 
-    /* public Double findOpenPoint(String symbol, Long regularMarketTime , List<ExQuickStore> exdtos){
-      LocalTime time = longToLocalTime(regularMarketTime);
-      ExQuickStore exdto = exdtos.stream().filter(e -> e.getSymbol().equals(symbol)).findFirst().get();
-      boolean dtoHourMin = exdto.getTimestamp().stream().anyMatch(e -> e.getHour() == time.getHour()
-                            && e.getMinute() == time.getMinute());
-      int index = -1;
-      int i = 0;
-      while (!exdto.getTimestamp().isEmpty()) { 
-          if (dtoHourMin) {
-            index 
-          }
-      }
-      return exdto.getOpen().
-      
+    //map dto to ExQuickStore object
+    public ExQuickStore mapExQuickStore(YahooStockOpenDTO.Chart.Result dto) {
+        LinkedList<LocalTime> timestamp = new LinkedList<>();
+        timestamp.addAll(dto.getTimestamp().stream().map(e -> longToLocalTime(e)).toList());
+        //close用回傳的參數
+        LinkedList<Double> close = new LinkedList<>(dto.getIndicators().getQuote().get(0).getClose());
 
-    } */
+        LinkedList<Double> open = new LinkedList<>();
+        LinkedList<Double> high = new LinkedList<>();
+        LinkedList<Double> low = new LinkedList<>();
 
-    public StockPriceEntity mapStockPrice(YahooStockDTO.QuoteBody.QuoteResult dto){
-    //LocalDate date = LocalDate.now();
-    LocalTime time = longToLocalTime(dto.getRegularMarketTime());
-    return StockPriceEntity.builder().marketPrice(dto.getRegularMarketPrice())
-      .regularMarketChangePercent(dto.getRegularMarketChangePercent())
-      .open(dto.getRegularMarketOpen())
-      .high(dto.getRegularMarketDayHigh())
-      .low(dto.getRegularMarketDayLow())
-      .bid(dto.getBid()).ask(dto.getAsk())
-      .tradeDate(MarketTimeManager.longToLocalDate(dto.getRegularMarketTime()))
-      .tradeWeek(MarketTimeManager.longTOWeek(dto.getRegularMarketTime()))
-      .priceUpdatetime(time).build();
-  }
+        open.addAll(dto.getIndicators().getQuote().get(0).getOpen());
+        high.addAll(dto.getIndicators().getQuote().get(0).getHigh());
+        low.addAll(dto.getIndicators().getQuote().get(0).getLow());
 
+        return ExQuickStore.builder().symbol(dto.getMeta().getSymbol()).timestamp(timestamp.getLast()).open(open).high(high).low(low).build();
+    }
+
+    public StockPriceEntity mapStockPrice(YahooStockDTO.QuoteBody.QuoteResult dto) {
+        LocalTime time = longToLocalTime(dto.getRegularMarketTime());
+        return StockPriceEntity.builder().marketPrice(dto.getRegularMarketPrice())
+                .regularMarketChangePercent(dto.getRegularMarketChangePercent())
+                .open(dto.getRegularMarketOpen())
+                .high(dto.getRegularMarketDayHigh())
+                .low(dto.getRegularMarketDayLow())
+                .bid(dto.getBid()).ask(dto.getAsk())
+                .tradeDate(MarketTimeManager.longToLocalDate(dto.getRegularMarketTime()))
+                .tradeWeek(MarketTimeManager.longTOWeek(dto.getRegularMarketTime()))
+                .priceUpdatetime(time).build();
+    }
+
+    //以ExQuickStore形式補充open,high,low資料
+    //處理open,high,low三個值相等的情況(API data有更新時，會先以close值代替open,high,low值)
+    //=>loop -2(用最尾第2個數)
+    //收市後，會null =>用not null的值
     public StockPriceEntity mapStockPrice(YahooStockDTO.QuoteBody.QuoteResult dto, List<ExQuickStore> exdtolist) throws Exception {
         LocalTime time = longToLocalTime(dto.getRegularMarketTime());
-        Double openNullpoint =  dto.getRegularMarketOpen();
-        
+
         boolean dtoHourMin;
-        //int target = -1;
-        //int i = 0;
-        List<ExQuickStore> exdtofilter = exdtolist.stream().filter(e ->e.getSymbol().equals(dto.getSymbol())).toList();
-        Double openpoint = exdtofilter.get(exdtofilter.size()-1).getOpen();
-        LocalTime lastTimestamp = exdtofilter.get(exdtofilter.size() - 1).getTimestamp();
-        if (time.isAfter(lastTimestamp) || time.equals(lastTimestamp) ) {
-            for (ExQuickStore exdto : exdtofilter) {    
-                if (exdto.getTimestamp().getHour() == time.getHour() && exdto.getTimestamp().getMinute() == time.getMinute()) {
-                    Double exopen =exdto.getDefaulopen() == null? openNullpoint : exdto.getDefaulopen();
-                    openpoint = exdto.getOpen() == null? exopen : exdto.getOpen();
-                    exdto.setDefaulopen(openpoint);
+        List<ExQuickStore> exdtofilter = exdtolist.stream().filter(e -> e.getSymbol().equals(dto.getSymbol())).toList();
+        ExQuickStore exdtoLast = exdtofilter.get(exdtofilter.size() - 1);
+        LinkedList<Double> openpoint = exdtoLast.getOpen();
+        LinkedList<Double> highpoint = exdtoLast.getHigh();
+        LinkedList<Double> lowpoint = exdtoLast.getLow();
+        Double open = exdtoLast.getOpen().getLast();
+        Double high = exdtoLast.getHigh().getLast();
+        Double low = exdtoLast.getLow().getLast();
+        if (exdtoLast != null) {
+            LinkedList<Double> openList = exdtoLast.getOpen();
+            LinkedList<Double> highList = exdtoLast.getHigh();
+            LinkedList<Double> lowList = exdtoLast.getLow();
+
+        }
+        
+        if (open != null && high != null && low != null) {
+            if ((open.equals(high) && high.equals(low))) {
+                for (int i = openpoint.size() - 2; i >= 0; i--) {
+                    Double prevOpen = openpoint.get(i);
+                    Double prevHigh = highpoint.get(i);
+                    Double prevLow = lowpoint.get(i);
+                    if (prevOpen != null && prevHigh != null && prevLow != null) {
+                        if (!(prevOpen.equals(prevHigh) && prevHigh.equals(prevLow))) {
+                            open = prevOpen;
+                            high = prevHigh;
+                            low = prevLow;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int i = openpoint.size() - 2; i >= 0; i--) {
+                Double prevOpen = openpoint.get(i);
+                Double prevHigh = highpoint.get(i);
+                Double prevLow = lowpoint.get(i);
+                if (prevOpen != null && prevHigh != null && prevLow != null) {
+                    open = prevOpen;
+                    high = prevHigh;
+                    low = prevLow;
                     break;
                 }
             }
-        } else{
-            openpoint =exdtofilter.get(exdtofilter.size()-1).getOpen() == null? exdtofilter.get(exdtofilter.size()-1).getDefaulopen() : exdtofilter.get(exdtofilter.size()-1).getOpen();
-            exdtofilter.get(exdtofilter.size()-1).setDefaulopen(openpoint);
-            
         }
-        
 
-        
         return StockPriceEntity.builder().marketPrice(dto.getRegularMarketPrice())
                 .regularMarketChangePercent(dto.getRegularMarketChangePercent())
                 //.open(dto.getRegularMarketOpen())
-                .open(openpoint)
-                .high(dto.getRegularMarketDayHigh())
-                .low(dto.getRegularMarketDayLow())
+                .open(open)
+                //.high(dto.getRegularMarketDayHigh())
+                //.low(dto.getRegularMarketDayLow())
+                .high(high)
+                .low(low)
                 .bid(dto.getBid())
                 .ask(dto.getAsk())
                 .tradeDate(MarketTimeManager.longToLocalDate(dto.getRegularMarketTime()))
@@ -156,13 +152,8 @@ public class EntityMapper {
                 .priceUpdatetime(time).build();
     }
 
-    /*  public List<StockPriceEntity> mapStockPrice(List<YahooStockDTO.QuoteBody.QuoteResult> dto){
-    List<StockPriceEntity> stockPriceEntityList = new ArrayList<>();
-    dto.stream().forEach(e -> stockPriceEntityList.add(mapStockPrice(e)));
-    return stockPriceEntityList;
-  } */
+    
     public StockPriceEntity mapStockPrice(RedisQuickStore store) {
-        //LocalDate date = LocalDate.now();
         LocalTime time = (store.getRegularMarketTime().toLocalTime());
         return StockPriceEntity.builder().marketPrice(store.getRegularMarketPrice())
                 .regularMarketChangePercent(store.getRegularMarketChangePercent())
@@ -175,11 +166,9 @@ public class EntityMapper {
                 .priceUpdatetime(time).build();
     }
 
-    public RedisQuickStore mapQuickStore(YahooStockDTO.QuoteBody.QuoteResult output, Double DBopen) {
+    public RedisQuickStore mapQuickStore(YahooStockDTO.QuoteBody.QuoteResult output, Double DBopen, Double DBhigh, Double DBlow) {
         String stockName = output.getSymbol();
         Double stockPrice = output.getRegularMarketPrice();
-        //Double highPoint = output.getRegularMarketDayHigh() - Math.max(output.getRegularMarketOpen(), output.getRegularMarketPrice());
-        //Double lowPoint = Math.min(output.getRegularMarketOpen(), output.getRegularMarketPrice()) - output.getRegularMarketDayLow();
 
         RedisQuickStore dtoRedisBuilder = RedisQuickStore.builder().symbol(stockName)
                 .symbolFullName(output.getLongName())
@@ -187,8 +176,10 @@ public class EntityMapper {
                 .regularMarketPrice(stockPrice).regularMarketChangePercent(output.getRegularMarketChangePercent())
                 //.regularMarketOpen(output.getRegularMarketOpen())
                 .regularMarketOpen(DBopen)
-                .regularMarketDayHigh(output.getRegularMarketDayHigh())
-                .regularMarketDayLow(output.getRegularMarketDayLow())
+                //.regularMarketDayHigh(output.getRegularMarketDayHigh())
+                //.regularMarketDayLow(output.getRegularMarketDayLow())
+                .regularMarketDayHigh(DBhigh)
+                .regularMarketDayLow(DBlow)
                 .bid(output.getBid()).ask(output.getAsk()).build();
         return dtoRedisBuilder;
     }
@@ -199,10 +190,10 @@ public class EntityMapper {
         LocalTime localTime = zonedDateTime.toLocalTime();
         return localTime.truncatedTo(ChronoUnit.HOURS)
                 .plusMinutes((localTime.getMinute() / 5) * 5);
-        //return localTime;
 
     }
 
+    //for frontend display function
     public Double getPriceChangePercent(Double MarketPrice, Double chartPreviousClose) {
         if (MarketPrice == null || chartPreviousClose == null || chartPreviousClose == 0) {
             return null;
@@ -229,7 +220,6 @@ public class EntityMapper {
         Double open = 0.00;
         Double high = 0.00;
         Double low = 0.00;
-        // Double close = 0.00;
         Double regularMarketChangePercent = 0.00;
         Long tradtimestamp = 0L;
         int tradeDateTimeslot = ohResult.getTimestamp().size();

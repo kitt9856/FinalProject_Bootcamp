@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import com.crumbcookie.crumbcookieresponse.Service.StockListService;
-import com.crumbcookie.crumbcookieresponse.dto.YahooStockDTO;
+
 import com.crumbcookie.crumbcookieresponse.lib.RedisManager;
 
 @Component
@@ -20,6 +19,7 @@ public class RedisRestartManager implements CommandLineRunner {
     this.redisManager = redisManager;
   }
 
+  //開機時，clear Redis
   @Override
   public void run(String... args) throws Exception {
     System.out.println("Start Clean Redis...");

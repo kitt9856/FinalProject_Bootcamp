@@ -33,7 +33,23 @@ Database: PostgreSQL
 Cache Management: Redis
 Containerization: Docker (Deployment)
 
+
+## Appendix
+* Request API if no auth
+* ![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/APIunanthorError.jpg)
+
+* Get API while reset Headers -> successful 
+* ![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/FinalPjHomepage.jpg)
+
+* Prepare Element for present data
+* ![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/PrepareHTML.jpg)
+
+* Problem before Backend Verison Update
+* ![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/FixRegularOpenPrice.jpg)
+
 ## Project Structure
+
+```
 FinalProject_Bootcamp-main/
 ├── Backend/
 │   └── crumbcookieresponse/
@@ -66,17 +82,3 @@ FinalProject_Bootcamp-main/
 │       ├── Dockerfile
 │       └── pom.xml
 └── README.md
-
-## Appendix
-Request API if no auth
-![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/APIunanthorError.jpg)
-
-Get API while reset Headers -> successful 
- ![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/FinalPjHomepage.jpg)
-
-Prepare Element for present data
-![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/PrepareHTML.jpg)
-
-Problem before Backend Verison Update
-![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/FixRegularOpenPrice.jpg)
-

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.hibernate.sql.ast.tree.expression.Collation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -70,8 +71,6 @@ public class YahooAPIService {
   @Autowired
   private StockPriceOHRepository stockPriceOHRepository;
 
-  /* @Autowired
-  private EntityMapper entityMapper; */
 
   @Autowired
   private DateTimeManager dateTimeManager;
@@ -86,12 +85,11 @@ public class YahooAPIService {
   @Autowired
   private DataAPIController dataAPIController;
 
-
+  //for test
   public List<String> getSymbols() throws Exception {
     List<String> symbolRedis = this.redisManager.get("stockSybmol",
      new TypeReference<List<String>>() {});
     Optional<List<String>> symbolRedisOpt = Optional.ofNullable(symbolRedis);
-    //if (symbolRedis != null) {
     if (symbolRedisOpt.isPresent()) {
       return symbolRedis;
     } else {
@@ -102,27 +100,25 @@ public class YahooAPIService {
     }
   }
 
+  //for test
   public Map<String,String> getSymbolsName() throws Exception {
     Map<String,String> symbolRedis = this.redisManager.get("stockSybmolName",
      new TypeReference<Map<String,String>>() {});
     Optional<Map<String,String>> symbolRedisOpt = Optional.ofNullable(symbolRedis);
-    //if (symbolRedis != null) {
     if (symbolRedisOpt.isPresent()) {
       return symbolRedis;
     } else {
-      //Map<String,String> symbolDB = new ArrayList<>();
       Map<String,String> symbolmap = new HashMap<>();
       this.stocksRepository.findAll().forEach(e ->{
         String symbol = e.getSymbol();
         symbolmap.put(symbol, e.getLongName());
-        //symbolmap.put("name", e.getLongName());
-       // symbolDB.add(symbolmap);
       } );
       this.redisManager.set("stockSybmolName", symbolmap);
       return symbolmap;
     }
   }
 
+  //for test
   public Map<String, Double> getPriceofStock() throws Exception {
     Map<String, Double> stockPriceList = this.redisManager.get("stockList", 
       new TypeReference<Map<String, Double>>() {});
@@ -145,6 +141,7 @@ public class YahooAPIService {
   }
 
   //@PostConstruct
+  //每次update都訪問自已的API
   public List<YahooStockDTO> getStockUpdateDTO(List<String> symbols) throws Exception{
       List<YahooStockDTO> dtolist = new ArrayList<>();
       MultiValueMap<String,String> DIYhttpParams = new LinkedMultiValueMap<>();
@@ -153,19 +150,7 @@ public class YahooAPIService {
 
       System.out.println("getQuote 4XX is" + dataAPIController.getQuote(symbols).getStatusCode().is4xxClientError());
 
-      /*String api = "";
-       try {
-        if (dataAPIController.getQuote(symbols).getStatusCode().is2xxSuccessful()) {
-          api = UriComponentsBuilder.newInstance().scheme("http")
-        .host("localhost").port(8100).path("/api/no1/getData4")//.path("").path("")
-        .queryParams(DIYhttpParams)
-        .toUriString();
-        }
-       
-      System.out.println(api);
-      } catch (Exception e) {
-        System.out.println("cannot connect getData4");
-      } */
+     
 
       String api = UriComponentsBuilder.newInstance().scheme("http")
         .host("localhost").port(8100).path("/api/no2/getData5")//.path("").path("")
@@ -174,30 +159,23 @@ public class YahooAPIService {
       System.out.println(api);
 
       try {
-        //ResponseEntity<String> DIYresponse = restTemplate.getForEntity(api, String.class); //.getForObject(api, YahooStockDTO.class);
         ResponseEntity<List<YahooStockDTO>> DIYresponse = restTemplate.exchange(api,HttpMethod.GET, null, new ParameterizedTypeReference<List<YahooStockDTO>>() {}); //.getForObject(api, YahooStockDTO.class);
-        //ResponseEntity<String> DIYresponse = restTemplate.getForEntity(api, String.class);
         if (DIYresponse.getStatusCode().is2xxSuccessful()) {
             return DIYresponse.getBody();
         }
         //ObjectMapper mapper = new ObjectMapper();
 
-        //JsonNode root = mapper.readTree(DIYresponse.getBody());
-        //JsonNode results = root.path("quoteResponse").path("result");
-        //YahooStockApiResponse apiResponse = mapper.readValue(DIYresponse.getBody(), YahooStockApiResponse.class);
-        //dtolist.add();
+        
         return Collections.emptyList();
-        // apiResponse.getQuoteResponse().getResult(); //mapper.readerForListOf(YahooStockDTO.class).readValue(results);
       } catch (Exception e) {
         System.out.println("Error" + e.getMessage());
         return Collections.emptyList();
       }
 
-      //ResponseEntity<YahooStockDTO> DIYresponse = restTemplate.getForEntity(api, YahooStockDTO.class); //.getForObject(api, YahooStockDTO.class);
-
-      //return Arrays.asList(a)dataAPIController.getQuote(symbols).getBody();
+      
   }
   
+  //visit Yahoo API
   public List<YahooStockDTO> getStockDTO(List<String> symbols) throws Exception {
     List<YahooStockDTO> dtolist = new ArrayList<>();
 
@@ -267,18 +245,15 @@ public class YahooAPIService {
   }
 
     //for rest time save to redis and show it to frontend
+    //開市期間get data, redis有就用redis的data,沒有就用DB的data
     public List<RedisQuickStore>  getData()throws JsonProcessingException {
-      Boolean checkBreakTime = MarketTimeManager.isBreakTime(LocalTime.now());
-      Boolean checktradeDay = MarketTimeManager.validTradeDay(LocalDate.now());
+      //Boolean checkBreakTime = MarketTimeManager.isBreakTime(LocalTime.now());
+      //Boolean checktradeDay = MarketTimeManager.validTradeDay(LocalDate.now());
       List<RedisQuickStore> result = this.redisManager.get("DTOResult", new TypeReference<List<RedisQuickStore>>() {});
       //List<RedisQuickStore> dbStores =  result.isEmpty()  ? new ArrayList<>() : result;
       List<RedisQuickStore> dbStores =  new ArrayList<>() ;
       Optional<List<RedisQuickStore>> resultOpt = Optional.ofNullable(result);
-
-      /* if (!dbStores.isEmpty()) {
-        return dbStores;
-        
-      } */
+    
       if (resultOpt.isPresent()) {
         return result;
       }
@@ -305,10 +280,6 @@ public class YahooAPIService {
     }
 
     public List<RedisQuickStore> getOHData() throws  JsonProcessingException {
-     // Boolean checkBreakTime = MarketTimeManager.isBreakTime(LocalTime.now());
-     // Boolean checktradeDay = MarketTimeManager.validTradeDay(LocalDate.now());
-      
-      //Map<String, List<RedisQuickStore>> redisOHresult = this.redisManager.g .get("DTOResultOH",new TypeReference<Map<String, List<RedisQuickStore>>>() {});
       List<RedisQuickStore> redisOHresult = this.redisManager.get("DTOResultOH", new TypeReference<List<RedisQuickStore>>() {});
       List<RedisQuickStore> dbStores = new ArrayList<>();
 
@@ -333,7 +304,6 @@ public class YahooAPIService {
             dbStores.add(dStore);
           }
           this.redisManager.set("DTOResultOH", dbStores);
-            //return dbStores.isEmpty() ? Collections.emptyList() : dbStores;
     
         }
        
@@ -346,8 +316,8 @@ public class YahooAPIService {
 
 
 
-  public static void main(String[] args) {
+  /* public static void main(String[] args) {
     LocalTime time = LocalTime.now();
     System.out.println(time);
-  }
+  } */
 }

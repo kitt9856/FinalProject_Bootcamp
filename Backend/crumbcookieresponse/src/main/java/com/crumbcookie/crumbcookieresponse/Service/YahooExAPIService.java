@@ -1,6 +1,7 @@
 package com.crumbcookie.crumbcookieresponse.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -93,8 +94,7 @@ public class YahooExAPIService {
 
         do {
             response = restTemplate.exchange(url, HttpMethod.GET, entity, YahooStockOpenDTO.class);
-            /* isbadreq = response.getBody().getChart().getError().getCode().equals(errorcode) ? 
-            true : false; */
+            
             if (response.getBody() == null || response.getBody().getChart() == null) {
                 while (isbadreq) { 
                     if (response.getBody().getChart().getResult() != null) {
@@ -143,8 +143,9 @@ public class YahooExAPIService {
                 stores.add(this.entityMapper.mapExQuickStore(result));
             }
         }
-        this.redisManager.set("exOpenDTO", dtolist, Duration.ofDays(2));
+        //this.redisManager.set("exOpenDTO", dtolist, Duration.ofDays(2));
         this.redisManager.set("ExDTOResult", stores,Duration.ofDays(2));
+        this.redisManager.set("ExDTOlastUpdate", LocalDateTime.now(), Duration.ofDays(2));
 
 
         return dtolist;

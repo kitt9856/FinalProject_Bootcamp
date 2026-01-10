@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class YahooStockApiResponse  {
+    //已停用
     private QuoteResponse quoteResponse;
 
     public QuoteResponse getQuoteResponse() {

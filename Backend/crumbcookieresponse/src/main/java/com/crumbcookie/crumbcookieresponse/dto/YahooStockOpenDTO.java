@@ -20,6 +20,7 @@ public class YahooStockOpenDTO {
     @Builder
     @AllArgsConstructor
     public static class Chart {
+        //delay dataDTO for produce candlestick chart
 
         private List<Result> result;
         private QuoteOpenError error;
@@ -111,9 +112,9 @@ public class YahooStockOpenDTO {
                 @AllArgsConstructor
                 public static class Quote {
 
-                    //private List<Double> high;
-                    //private List<Double> low;
-                    //private List<Double> close;
+                    private List<Double> high;
+                    private List<Double> low;
+                    private List<Double> close;
                     //private List<Long> volume;
                     private List<Double> open;
 

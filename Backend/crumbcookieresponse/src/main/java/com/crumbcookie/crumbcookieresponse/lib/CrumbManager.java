@@ -26,6 +26,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class CrumbManager {
+
+    //Open CrumbManager class 
+    //get Crumb key & Yahoo Cookie(A3)
+    //Mozilla/5.0--模擬browser行為
   private static final String fcYaho = "https://fc.yahoo.com";
   private String yahooCookie;
   private String strFromgGetCrum;
@@ -37,18 +41,18 @@ public class CrumbManager {
 
 
 
-  /* public String getStrCrum(){
-    
-  } */
+  
 
   public  void getKey() throws Exception {
    // RestTemplate restTemplate = new RestTemplate();
 
+   //set自已server等待時間，防止timeout exception
     restTemplate = new RestTemplateBuilder() //
         .connectTimeout(Duration.ofSeconds(20)) //
         .readTimeout(Duration.ofSeconds(20)) //
         .build();
 
+    //如果已有key及cookie，則不再get
     //CrumbManager crumbManager = new CrumbManager();
     //crumbManager.setYahCookie();
     if (this.strFromgGetCrum != null && this.yahooCookie != null) {
@@ -103,8 +107,8 @@ public class CrumbManager {
 }
   
   
-
-  public static void main(String[] args) {
+    //this main for debug  
+ // public static void main(String[] args) {
   /*  try {
         URL url = new URL("https://fc.yahoo.com/");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -194,5 +198,5 @@ public class CrumbManager {
 
 
 
-  }
+  //}
 }
