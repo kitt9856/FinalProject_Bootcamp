@@ -7,7 +7,7 @@ Website Homepage
 
 In 0.0.1-SNAPSHOT ver., "Open Price" per minute was fixed it leads to  Candlestick Chart display the open price at a static point and it appears illogical
 
-In 0.0.2-SNAPSHOT ver., Add a extra api data source try to sovle the issue of 0.0.1-SNAPSHOT ver.
+In 0.0.2-SNAPSHOT ver., Add a extra api data source try to sovle the issue of 0.0.1-SNAPSHOT ver., but frontend will display delay 10-15 min data
 
 # Features
 
@@ -46,6 +46,10 @@ Containerization: Docker (Deployment)
 
 * Problem before Backend Verison Update
 * ![Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/FixRegularOpenPrice.jpg)
+
+* After update New Version(0.0.2-SNAPSHOT ver.)
+* ! [Image text](https://github.com/kitt9856/FinalProject_Bootcamp/blob/main/img/CompareToRealCur.jpg)
+
 
 ## Project Structure
 
