@@ -67,12 +67,17 @@ public class MarketTimeManager {
     return formattedDayOfWeek;
   }
 
-  public void workingDayDelPriceDB(StockPriceRepository stockPriceRepository, StocksRepository stocksRepository){
+  public void workingDayDelPriceDB(StockPriceOHRepository stockPriceOHRepository, StockPriceRepository stockPriceRepository, StocksRepository stocksRepository){
     LocalDate today = LocalDate.now();
-    if (!validNotTradeDay(today)) {
+    if (validNotTradeDay(today)) {
+      stockPriceOHRepository.deleteAll();
       stockPriceRepository.deleteAll();
       stocksRepository.deleteAll();
       System.out.println("workingDayDelPriceDB, Today is " + today.getDayOfWeek());
+    } else {
+      stockPriceOHRepository.deleteAll();
+      
+      System.out.println("workingDayDelOHPriceDB, Today is " + today.getDayOfWeek());
     }
   }
 

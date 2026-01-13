@@ -72,8 +72,8 @@ public class StartupManager implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     System.out.println("Service Start");
-    this.marketTimeManager.workingDayDelOHPriceDB(this.stockPriceOHRepository);
-    this.marketTimeManager.workingDayDelPriceDB(this.stockPriceRepository,this.stocksRepository);
+    //this.marketTimeManager.workingDayDelOHPriceDB(this.stockPriceOHRepository);
+    this.marketTimeManager.workingDayDelPriceDB(this.stockPriceOHRepository,this.stockPriceRepository,this.stocksRepository);
     this.crumbManager.getKey();
     this.yahooExAPIService.getExMarket();
     this.stockListService.getMarket();
